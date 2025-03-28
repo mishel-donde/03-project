@@ -1,21 +1,21 @@
 {
-    "app": {
-        "port": "3000",
-        "name": "twitter dev",
-        "secret": "MySecret",
-        "jwtSecret": "MyJwtSecret"
-    },
-    "db": {
-        "host": "localhost",
-        "port": 3306,
-        "username": "root",
-        "password": "",
-        "database": "twitter"
-    },
-    "sequelize": {
-        "logging": true,
-        "sync": {
-            "force": false
-        }
+  "app": {
+    "port": "3003",
+    "name": "vacation",
+    "secret": "MySecret",
+    "jwtSecret": "MyJwtSecret"
+  },
+  "db": {
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "",
+    "database": "vacation"
+  },
+  "sequelize": {
+    "logging": true,
+    "sync": {
+      "force": false
     }
+  }
 }

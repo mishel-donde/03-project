@@ -1,73 +1,53 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../../models/user";
-import Follow from "../../models/follow";
-import { col } from "sequelize";
-import AppError from "../../errors/app-error";
 import { StatusCodes } from "http-status-codes";
+import AppError from "../../errors/app-error";
+import Follow from "../../models/follow";
 
-export async function getFollowers(req: Request, res: Response, next: NextFunction) {
-    try {
-        const userId = req.userId
+export async function followVacation(
+  req: Request<{ vacationId: string }>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const userId = req.userId;
 
-        const user = await User.findByPk(userId, {
-            include: [ { 
-                model: User,
-                as: 'followers',
-            } ],
-            order: [[col('followers.name'), 'ASC']],
-        })
-        res.json(user.followers)
-    } catch (e) {
-        next(e)
-    }
+    const newFollowVacation = await Follow.create({
+      userId: userId,
+      vacationId: req.params.vacationId,
+    });
+
+    res.json(newFollowVacation);
+  } catch (e) {
+    if (e.message === "Validation error")
+      return next(
+        new AppError(StatusCodes.CONFLICT, `You already follow this Vacation.`)
+      );
+    next(e);
+  }
 }
 
-export async function getFollowing(req: Request, res: Response, next: NextFunction) {
-    try {
-        const userId = req.userId
-
-        const user = await User.findByPk(userId, {
-            include: [ { 
-                model: User,
-                as: 'following'
-            } ]
-        })
-        res.json(user.following)
-    } catch (e) {
-        next(e)
-    }
-}
-
-export async function follow(req: Request<{id: string}>, res: Response, next: NextFunction) {
-
-    try {
-        const userId = req.userId
-        const follow = await Follow.create({
-            followerId: userId,
-            followeeId: req.params.id
-        })
-        res.json(follow)
-    } catch (e) {
-        next(e)
-    }
-}
-
-export async function unfollow(req: Request<{id: string}>, res: Response, next: NextFunction) {
-
-    try {
-        const userId = req.userId
-        const isUnfollowed = await Follow.destroy({
-            where: {
-                followerId: userId,
-                followeeId: req.params.id
-            }
-        })
-        if (!isUnfollowed) return next(new AppError(
-            StatusCodes.NOT_FOUND,
-            'tried to delete unexisting record'
-        ))
-        res.json({ success: true })
-    } catch (e) {
-        next(e)
-    }
+export async function unfollowVacation(
+  req: Request<{ vacationId: string }>,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const userId = req.userId;
+    const isUnfollowed = await Follow.destroy({
+      where: {
+        userId: userId,
+        vacationId: req.params.vacationId,
+      },
+    });
+    if (!isUnfollowed)
+      return next(
+        new AppError(
+          StatusCodes.NOT_FOUND,
+          "tried to delete Unexisting Vacation"
+        )
+      );
+    res.json({ success: true });
+  } catch (e) {
+    next(e);
+  }
 }

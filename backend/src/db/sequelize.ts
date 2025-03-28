@@ -1,17 +1,16 @@
+import config from "config";
 import { Sequelize } from "sequelize-typescript";
-import User from "../models/user";
-import config from 'config'
-import Post from "../models/post";
-import Comment from "../models/comment";
 import Follow from "../models/follow";
+import User from "../models/user";
+import Vacation from "../models/vacation";
 
-const logging = config.get<boolean>('sequelize.logging') ? console.log : false
+const logging = config.get<boolean>("sequelize.logging") ? console.log : false;
 
 const sequelize = new Sequelize({
-    models: [ User, Post, Comment, Follow ],
-    dialect: 'mysql',
-    ...config.get('db'),
-    logging,
-})
+  models: [Follow, User, Vacation],
+  dialect: "mysql",
+  ...config.get("db"),
+  logging,
+});
 
-export default sequelize
+export default sequelize;
